@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Funny Little Numbers on the back of your parents credit card!!!!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+        #urlInput, #nameInput {
+            width: 300px;
+            margin: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 10px;
+        }
+        #savedUrls {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .savedUrl {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .savedUrl button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="nameInput" placeholder="Enter site name" />
+    <input type="text" id="urlInput" placeholder="Enter website URL or local file path" />
+    <button onclick="openLink()">Open URL</button>
+    <button onclick="saveUrl()">Save URL</button>
+
+    <div id="savedUrls"></div>
+
+    <script>
+        function openLink() {
+            const name = document.getElementById('nameInput').value;
+            const url = document.getElementById('urlInput').value;
+
+            if (!url) {
+                alert('Please enter a valid URL or file path');
+                return;
+            }
+
+            var newWindow = window.open('about:blank', '_blank');
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <title>${name}</title>
+                    <style> 
+                        body { margin: 0; }
+                        iframe { width: 100vw; height: 100vh; border: none; }
+                    </style>
+                </head>
+                <body>
+                    <iframe src="${url}"></iframe>
+                </body>
+                </html>
+            `);
+            newWindow.document.close();
+        }
+    
+        function saveUrl() {
+            const url = document.getElementById('urlInput').value;
+            const name = document.getElementById('nameInput').value;
+    
+            if (!url || !name) {
+                alert('Please enter a valid URL and a name to save');
+                return;
+            }
+    
+            let savedUrls = JSON.parse(localStorage.getItem('savedUrls')) || [];
+            const existing = savedUrls.find(item => item.name === name);
+            if (!existing) {
+                savedUrls.push({ name, url });
+                localStorage.setItem('savedUrls', JSON.stringify(savedUrls));
+                loadSavedUrls();
+            } else {
+                alert('This name is already saved. Please choose a different name.');
+            }
+        }
+    
+        function deleteUrl(name) {
+            let savedUrls = JSON.parse(localStorage.getItem('savedUrls')) || [];
+            savedUrls = savedUrls.filter(item => item.name !== name);
+            localStorage.setItem('savedUrls', JSON.stringify(savedUrls));
+            loadSavedUrls();
+        }
+    
+        function loadSavedUrls() {
+            const savedUrls = JSON.parse(localStorage.getItem('savedUrls')) || [];
+            const savedUrlsDiv = document.getElementById('savedUrls');
+            savedUrlsDiv.innerHTML = '<h3>Saved URLs:</h3>';
+            savedUrls.forEach(item => {
+                const urlDiv = document.createElement('div');
+                urlDiv.className = 'savedUrl';
+                const button = document.createElement('button');
+                button.innerText = item.name;
+                button.onclick = () => openLink(item.name, item.url); // Call openLink with name and url
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.onclick = () => deleteUrl(item.name);
+                
+                urlDiv.appendChild(button);
+                urlDiv.appendChild(deleteButton);
+                savedUrlsDiv.appendChild(urlDiv);
+            });
+        }
+    
+        // Load saved URLs on page load
+        window.onload = loadSavedUrls;
+    </script>
+</body>
+</html>
