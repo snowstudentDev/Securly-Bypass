@@ -61,10 +61,19 @@
         .show-password label {
             white-space: nowrap; /* Prevent text from wrapping */
         }
+        #admin-password-container {
+            display: none; /* Hide admin password container initially */
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <h2>Enter Admin Password</h2>
+        <input type="password" id="adminPasswordInput" placeholder="Admin Password">
+        <button onclick="checkAdminPassword()">Submit</button>
+    </div>
+
+    <div id="admin-password-container" class="login-container">
         <h2>Enter PIN Code</h2>
         <div style="display: flex; align-items: center;">
             <input type="password" id="pinInput" placeholder="Enter 4-digit PIN" maxlength="12">
@@ -81,7 +90,7 @@
 
         function getCurrentPin() {
             const today = new Date();
-            const lastUpdate = localStorage.getItem('lastUpdate');
+            const lastUpdate = localStorage.getItem(' lastUpdate');
             const currentPin = localStorage.getItem('currentPin');
 
             if (!lastUpdate || new Date(lastUpdate).toDateString() !== today.toDateString()) {
@@ -91,6 +100,18 @@
                 return newPin.toString().padStart(4, '0'); // Ensure it's 4 digits
             }
             return currentPin.padStart(4, '0'); // Return the current PIN
+        }
+
+        function checkAdminPassword() {
+            const adminPassword = document.getElementById('adminPasswordInput').value;
+            const correctAdminPassword = 'admin'; // Decrypted version of bnVodWg=
+
+            if (adminPassword === correctAdminPassword) {
+                document.querySelector('.login-container').style.display = 'none'; // Hide admin password input
+                document.getElementById('admin-password-container').style.display = 'block'; // Show PIN input
+            } else {
+                alert('Incorrect admin password. Please try again.');
+            }
         }
 
         function validatePin() {
