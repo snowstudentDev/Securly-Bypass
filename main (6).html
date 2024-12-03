@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher</title>
+    <link rel="icon" type="image/x-icon" href="https://www.google.com/imgres?q=google%20classroom%20icon&imgurl=https%3A%2F%2Fbanner2.cleanpng.com%2F20180331%2Fktq%2Faviuevtg3.webp&imgrefurl=https%3A%2F%2Fwww.cleanpng.com%2Fpng-google-classroom-teacher-g-suite-computer-icons-cl-757614%2F&docid=r-b9khK-gVrAkM&tbnid=18kImK5cGeNp7M&vet=12ahUKEwi6pcKv-cyJAxVUFVkFHegnEEgQM3oECBUQAA..i&w=900&h=900&hcb=2&ved=2ahUKEwi6pcKv-cyJAxVUFVkFHegnEEgQM3oECBUQAA">
+
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text color */
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            text-align: center;
+            background: #1e1e1e; /* Darker container */
+            padding: 15px; /* Reduced padding */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 300px; /* Fixed width for better layout */
+        }
+        .login-container input {
+            padding: 8px; /* Reduced padding */
+            margin: 8px 0; /* Reduced margin */
+            border: 1px solid #555; /* Darker border */
+            border-radius: 4px;
+            width: calc(100% - 40px); /* Adjust width to accommodate checkbox */
+            box-sizing: border-box;
+            background-color: #333; /* Dark input background */
+            color: #fff; /* Light input text */
+            display: inline-block; /* Make input inline */
+        }
+        .login-container button {
+            padding: 8px; /* Reduced padding */
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .show-password {
+            margin-top: 8px; /* Reduced margin */
+            text-align: left;
+            display: flex;
+            align-items: center; /* Align checkbox vertically */
+        }
+        .show-password input[type="checkbox"] {
+            margin-left: 5px; /* Space between input and checkbox */
+            transform: scale(1.2); /* Increase the size of the checkbox */
+        }
+        .show-password label {
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+        #admin-password-container {
+            display: none; /* Hide admin password container initially */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Enter Admin Password</h2>
+        <input type="password" id="adminPasswordInput" placeholder="Admin Password">
+        <button onclick="checkAdminPassword()">Submit</button>
+    </div>
+
+    <div id="admin-password-container" class="login-container">
+        <h2>Enter PIN Code</h2>
+        <div style="display: flex; align-items: center;">
+            <input type="password" id="pinInput" placeholder="Enter 4-digit PIN" maxlength="12">
+            <div class="show-password">
+                <input type="checkbox" id="showPasswordCheckbox"> 
+                <label for="showPasswordCheckbox">Show Password</label>
+            </div>
+        </div>
+        <button onclick="validatePin()">Launch!</button>
+    </div>
+
+    <script>
+        const BASE_PIN = 1; // Starting PIN number
+
+        function getCurrentPin() {
+            const today = new Date();
+            const lastUpdate = localStorage.getItem(' lastUpdate');
+            const currentPin = localStorage.getItem('currentPin');
+
+            if (!lastUpdate || new Date(lastUpdate).toDateString() !== today.toDateString()) {
+                const newPin = BASE_PIN + Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                localStorage.setItem('currentPin', newPin);
+                localStorage.setItem('lastUpdate', today.toISOString());
+                return newPin.toString().padStart(4, '0'); // Ensure it's 4 digits
+            }
+            return currentPin.padStart(4, '0'); // Return the current PIN
+        }
+
+        function checkAdminPassword() {
+            const adminPassword = document.getElementById('adminPasswordInput').value;
+            const correctAdminPassword = 'admin'; // Decrypted version of bnVodWg=
+
+            if (adminPassword === correctAdminPassword) {
+                document.querySelector('.login-container').style.display = 'none'; // Hide admin password input
+                document.getElementById('admin-password-container').style.display = 'block'; // Show PIN input
+            } else {
+                alert('Incorrect admin password. Please try again.');
+            }
+        }
+
+        function validatePin() {
+            const pin = document.getElementById('pinInput').value;
+            const customPassword = localStorage.getItem('customPassword');
+            const currentPin = getCurrentPin();
+
+            if (pin === "SETPASSWORD") {
+                setCustomPassword();
+            } else if (pin === customPassword || pin === currentPin) {
+                openLink();
+            } else {
+                alert('Invalid PIN. Please try again.');
+            }
+        }
+
+        function setCustomPassword() {
+            const newPassword = prompt("Enter a new password:");
+            if (newPassword) {
+                localStorage.setItem('customPassword', newPassword);
+                alert("Password has been set successfully.");
+            }
+        }
+
+        function openLink() {
+            var newWindow = window.open('about:blank ', '_blank');
+            newWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Home - Classroom</title>
+                        <link rel="icon" type="image/x-icon" href="https://www.google.com/imgres?q=google%20classroom%20icon&imgurl=https%3A%2F%2Fbanner2.cleanpng.com%2F20180331%2Fktq%2Faviuevtg3.webp&imgrefurl=https%3A%2F%2Fwww.cleanpng.com%2Fpng-google-classroom-teacher-g-suite-computer-icons-cl-757614%2F&docid=r-b9khK-gVrAkM&tbnid=18kImK5cGeNp7M&vet=12ahUKEwi6pcKv-cyJAxVUFVkFHegnEEgQM3oECBUQAA..i&w=900&h=900&hcb=2&ved=2ahUKEwi6pcKv-cyJAxVUFVkFHegnEEgQM3oECBUQAA">
+
+                        <style>
+                            html, body {
+                                margin: 0;
+                                padding: 0;
+                                height: 100%;
+                                width: 100%;
+                                overflow: hidden; /* Prevent scrolling */
+                            }
+                            iframe {
+                                height: 100%;
+                                width: 100%;
+                                border: none; /* Remove border */
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <iframe src="https://operation-phoenix-dawn.github.io/"></iframe>
+                    </body>
+                </html>
+            `);
+            newWindow.document.close(); // Close the document to render the iframe
+        }
+
+        // Show/Hide Password Functionality
+        document.getElementById('showPasswordCheckbox').addEventListener('change', function() {
+            const pinInput = document.getElementById('pinInput');
+            pinInput.type = this.checked ? 'text' : 'password'; // Toggle between text and password input types
+        });
+    </script>
+</body>
+</html>
